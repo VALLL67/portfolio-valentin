@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { motion, animate, useMotionValue, useSpring, useMotionTemplate } from 'framer-motion'
+import { startPointerTracking, getPointer, setPointer } from '../lib/pointer.js'
 
 // Carte interactive : halo cuivre/violet IDENTIQUE à celui du hero (suit le
 // curseur, se recalcule au scroll, disparaît en fondu quand le curseur quitte
@@ -7,7 +8,6 @@ import { motion, animate, useMotionValue, useSpring, useMotionTemplate } from 'f
 // carte (bordure, fond, rayon, padding…) — ce composant EST la carte.
 export default function SpotlightCard({ children, className = '', tilt = 7 }) {
   const ref = useRef(null)
-  const lastPointer = useRef({ x: null, y: null })
   const mx = useMotionValue(50)
   const my = useMotionValue(50)
   const opacity = useMotionValue(0)
@@ -22,7 +22,7 @@ export default function SpotlightCard({ children, className = '', tilt = 7 }) {
   // Recalcule position + visibilité depuis la dernière position du curseur.
   // Appelé au mousemove ET au scroll → comportement identique au hero.
   const apply = () => {
-    const { x, y } = lastPointer.current
+    const { x, y } = getPointer()
     if (x == null || !ref.current) return
     const r = ref.current.getBoundingClientRect()
     const px = (x - r.left) / r.width
@@ -43,7 +43,7 @@ export default function SpotlightCard({ children, className = '', tilt = 7 }) {
 
   const handleMove = (e) => {
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
-    lastPointer.current = { x: e.clientX, y: e.clientY }
+    setPointer(e.clientX, e.clientY)
     apply()
   }
   const handleLeave = () => {
@@ -53,9 +53,33 @@ export default function SpotlightCard({ children, className = '', tilt = 7 }) {
   }
 
   useEffect(() => {
-    const onScroll = () => apply()
+    startPointerTracking()
+    let raf = null
+    let idle = null
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = null
+    }
+    const loop = () => {
+      apply()
+      raf = requestAnimationFrame(loop)
+    }
+    const onScroll = () => {
+      if (!raf) loop()
+      clearTimeout(idle)
+      idle = setTimeout(() => {
+        apply()
+        stop()
+      }, 150)
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    window.addEventListener('resize', apply)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', apply)
+      clearTimeout(idle)
+      stop()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

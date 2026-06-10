@@ -9,6 +9,7 @@ import {
 } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
 import Magnetic from './Magnetic.jsx'
+import { startPointerTracking, getPointer, setPointer } from '../lib/pointer.js'
 import { profile } from '../data/content.js'
 
 // Compteur "uptime" depuis l'arrivée chez SEW (sept. 2022) — clin d'œil au monitoring.
@@ -47,7 +48,6 @@ export default function Hero() {
   const gx = useMotionValue(0.5)
   const gy = useMotionValue(0.4)
   const glowOpacity = useMotionValue(0) // 0 = invisible quand le curseur n'est pas dessus
-  const lastPointer = useRef({ x: null, y: null })
   const glow = useMotionTemplate`radial-gradient(540px circle at ${useTransform(gx, (v) => v * 100)}% ${useTransform(gy, (v) => v * 100)}%, rgb(var(--copper) / var(--glow-strong)), rgb(var(--copper) / var(--glow-soft)) 35%, transparent 70%)`
 
   const fadeGlow = (visible) =>
@@ -57,7 +57,7 @@ export default function Hero() {
   // connue du curseur. Appelé au mousemove ET au scroll : si le curseur n'est
   // plus au-dessus du hero (ex. on scrolle vers le bas), le halo s'efface.
   const updateGlow = () => {
-    const { x, y } = lastPointer.current
+    const { x, y } = getPointer()
     if (x == null || !sectionRef.current) return
     const r = sectionRef.current.getBoundingClientRect()
     gx.set((x - r.left) / r.width)
@@ -68,15 +68,39 @@ export default function Hero() {
 
   const handleMove = (e) => {
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
-    lastPointer.current = { x: e.clientX, y: e.clientY }
+    setPointer(e.clientX, e.clientY)
     updateGlow()
   }
   const handleLeave = () => fadeGlow(false)
 
   useEffect(() => {
-    const onScroll = () => updateGlow()
+    startPointerTracking()
+    let raf = null
+    let idle = null
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = null
+    }
+    const loop = () => {
+      updateGlow()
+      raf = requestAnimationFrame(loop)
+    }
+    const onScroll = () => {
+      if (!raf) loop() // recalcule à chaque frame tant qu'on scrolle
+      clearTimeout(idle)
+      idle = setTimeout(() => {
+        updateGlow() // recalcul final une fois le scroll totalement arrêté
+        stop()
+      }, 150)
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    window.addEventListener('resize', updateGlow)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', updateGlow)
+      clearTimeout(idle)
+      stop()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
