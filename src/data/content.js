@@ -17,7 +17,7 @@ export const interests = [
   {
     icon: 'Car',
     label: 'Automobile',
-    note: 'Mécanique, design et ingénierie sur quatre roues.',
+    note: 'Mécanique, design et sport automobile.',
   },
   {
     icon: 'Watch',
@@ -84,14 +84,14 @@ export const education = [
     period: 'Sept. 2025 — Sept. 2027',
     school: 'IRIS Mediaschool',
     degree: 'Mastère Expert en ingénierie des systèmes d’information',
-    level: 'RNCP niv. 7',
+    level: 'BAC+5 | RNCP niv. 7',
     skills: ['Docker avancé & Swarm', 'Protection des données (Veeam)', 'Automatisation (n8n)'],
   },
   {
     period: 'Sept. 2024 — Août 2025',
     school: 'IRIS Mediaschool',
     degree: 'Bachelor Administrateur d’Infrastructures Sécurisées',
-    level: 'RNCP niv. 6',
+    level: 'BAC+3 | RNCP niv. 6',
     skills: [
       'Gestion de projet',
       'Architecture d’infrastructure',
@@ -104,14 +104,14 @@ export const education = [
     period: 'Sept. 2022 — Août 2024',
     school: 'IRIS Mediaschool',
     degree: 'BTS SIO — Option SISR',
-    level: 'BAC+2',
+    level: 'BAC+2 | RNCP niv. 5',
     skills: ['Virtualisation', 'Linux / Windows Server', 'PowerShell / Python'],
   },
   {
     period: 'Sept. 2019 — Juil. 2022',
     school: 'Lycée André Maurois',
     degree: 'Baccalauréat général (Maths, S.E.S)',
-    level: 'Mention Bien',
+    level: 'BAC | RNCP niv. 4',
     skills: ['Mathématiques', 'Sciences économiques et sociales'],
   },
 ]
