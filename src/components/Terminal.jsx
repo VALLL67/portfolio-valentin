@@ -16,10 +16,10 @@ function uptimeStr() {
 }
 
 const BANNER = [
-  '┌────────────────────────────────────────────┐',
-  '│  valcloud.fr — console interactive         │',
-  '│  Tape "help" pour la liste des commandes   │',
-  '└────────────────────────────────────────────┘',
+  '┌─────────────────────────────────────────┐',
+  '│  valcloud.fr — console interactive        │',
+  '│  Tape "help" pour la liste des commandes  │',
+  '└─────────────────────────────────────────┘',
 ]
 
 export default function Terminal() {
@@ -70,17 +70,17 @@ export default function Terminal() {
       case 'help':
         printMany([
           'Commandes disponibles :',
-          '  help',
-          '  whoami',
-          '  uptime',
-          '  skills',
-          '  contact',
-          '  ls',
-          '  theme dark|light',
-          '  crt',
-          '  matrix',
-          '  clear',
-          '  exit',
+          '  help              cette aide',
+          '  whoami            qui est Valentin Stoll',
+          '  uptime            temps depuis l’arrivée chez SEW',
+          '  skills            compétences principales',
+          '  contact           adresse e-mail',
+          '  ls                lister les "sections"',
+          '  theme dark|light  changer de thème',
+          '  crt               (dés)activer le mode CRT secret',
+          '  matrix            lancer la pluie de code',
+          '  clear             nettoyer la console',
+          '  exit              fermer le terminal',
         ])
         break
       case 'whoami':

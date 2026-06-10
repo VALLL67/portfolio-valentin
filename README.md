@@ -2,6 +2,8 @@
 
 Portfolio one-page (+ page Mentions légales) construit avec **React + Vite**, **Tailwind CSS**, **Framer Motion**, **React Router (HashRouter)** et **lucide-react**.
 
+Polices auto-hébergées via @fontsource (conformité RGPD, aucune requête vers Google Fonts).
+
 Esthétique : dark mode, accent cuivre/laiton, hairlines et données en monospace — un parti pris « instrument de précision » à la croisée de l'infrastructure IT et de l'horlogerie.
 
 ## Démarrer en local
