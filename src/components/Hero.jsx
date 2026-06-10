@@ -10,6 +10,7 @@ import {
 import { ArrowDown } from 'lucide-react'
 import Magnetic from './Magnetic.jsx'
 import { startPointerTracking, getPointer, setPointer } from '../lib/pointer.js'
+import { markFound } from '../lib/easterEggs.js'
 import { profile } from '../data/content.js'
 
 // Compteur "uptime" depuis l'arrivée chez SEW (sept. 2022) — clin d'œil au monitoring.
@@ -142,7 +143,10 @@ export default function Hero() {
       ref={sectionRef}
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
-      onDoubleClick={() => setClockMode(true)}
+      onDoubleClick={() => {
+        setClockMode(true)
+        markFound('clock')
+      }}
       className="relative flex min-h-[100svh] select-none items-center overflow-hidden"
     >
       {/* Grille technique */}

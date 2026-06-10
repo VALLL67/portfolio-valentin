@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowUpRight, ArrowUp, Mail } from 'lucide-react'
 import { profile } from '../data/content.js'
 import Magnetic from './Magnetic.jsx'
+import EasterEggCounter from './EasterEggCounter.jsx'
 
 export default function Footer() {
   const goTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -42,6 +43,7 @@ export default function Footer() {
             <Link to="/mentions-legales" className="text-muted transition-colors hover:text-copper">
               Mentions légales
             </Link>
+            <EasterEggCounter />
           </div>
 
           <button

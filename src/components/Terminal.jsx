@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { TerminalSquare, X } from 'lucide-react'
 import { profile } from '../data/content.js'
 import { setBaseTheme, toggleCrt } from '../lib/theme.js'
+import { markFound, getProgress } from '../lib/easterEggs.js'
 
 const PROMPT = 'visitor@valcloud:~$'
 
@@ -49,7 +50,10 @@ export default function Terminal() {
   }, [])
 
   useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 60)
+    if (open) {
+      markFound('terminal')
+      setTimeout(() => inputRef.current?.focus(), 60)
+    }
   }, [open])
 
   useEffect(() => {
@@ -79,6 +83,7 @@ export default function Terminal() {
           '  theme dark|light  changer de thème',
           '  crt               (dés)activer le mode CRT secret',
           '  matrix            lancer la pluie de code',
+          '  eggs              ta progression easter eggs',
           '  clear             nettoyer la console',
           '  exit              fermer le terminal',
         ])
@@ -126,7 +131,13 @@ export default function Terminal() {
         break
       case 'crt': {
         const on = toggleCrt()
+        if (on) markFound('crt')
         print(on ? 'mode CRT activé — phosphores chauds 🟢' : 'mode CRT désactivé')
+        break
+      }
+      case 'eggs': {
+        const { found, total } = getProgress()
+        print(`easter eggs trouvés : ${found}/${total}`)
         break
       }
       case 'matrix':

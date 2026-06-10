@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { markFound } from '../lib/easterEggs.js'
 
 // Pluie de caractères facon "matrix", composée de jetons PowerShell/IT.
 // Déclenchée par l'évènement window 'triggermatrix' (5 clics sur le logo ou
@@ -10,7 +11,10 @@ export default function MatrixRain() {
   const canvasRef = useRef(null)
 
   useEffect(() => {
-    const trigger = () => setActive(true)
+    const trigger = () => {
+      setActive(true)
+      markFound('matrix')
+    }
     window.addEventListener('triggermatrix', trigger)
     return () => window.removeEventListener('triggermatrix', trigger)
   }, [])
