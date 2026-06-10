@@ -109,7 +109,8 @@ export default function Hero() {
     <section
       ref={sectionRef}
       onMouseMove={handleMove}
-      className="relative flex min-h-[100svh] items-center overflow-hidden"
+      onDoubleClick={() => setClockMode(true)}
+      className="relative flex min-h-[100svh] select-none items-center overflow-hidden"
     >
       {/* Grille technique */}
       <div className="absolute inset-0 bg-grid mask-radial animate-grid-drift" aria-hidden />
@@ -117,11 +118,10 @@ export default function Hero() {
       {/* Lueur interactive */}
       <motion.div style={{ background: glow }} className="pointer-events-none absolute inset-0 animate-glow-pulse" aria-hidden />
 
-      {/* Bezel rotatif + parallaxe (double-clic = mode horloge) */}
+      {/* Bezel rotatif + parallaxe (le double-clic est géré au niveau de la section) */}
       <motion.div
         style={{ y: bezelY, scale: bezelScale }}
-        onDoubleClick={() => setClockMode(true)}
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto select-none"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
         aria-hidden
       >
         <svg className="h-[min(86vmin,680px)] w-[min(86vmin,680px)] opacity-60" viewBox="0 0 800 800" fill="none">
