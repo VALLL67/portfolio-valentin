@@ -30,7 +30,7 @@ export default function SpotlightCard({ children, className = '', tilt = 7 }) {
     my.set(50)
   }
 
-  const spotlight = useMotionTemplate`radial-gradient(420px circle at ${mx}% ${my}%, rgb(var(--copper) / 0.14), transparent 65%)`
+  const spotlight = useMotionTemplate`radial-gradient(540px circle at ${mx}% ${my}%, rgb(var(--copper) / var(--glow-strong)), rgb(var(--copper) / var(--glow-soft)) 35%, transparent 70%)`
 
   return (
     <motion.div

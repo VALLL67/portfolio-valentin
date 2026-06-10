@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   motion,
+  animate,
   useMotionValue,
   useMotionTemplate,
   useScroll,
@@ -45,18 +46,24 @@ export default function Hero() {
   // Lueur violette qui suit le curseur dans le hero
   const gx = useMotionValue(0.5)
   const gy = useMotionValue(0.4)
+  const glowOpacity = useMotionValue(0) // 0 = invisible quand le curseur n'est pas dessus
   const lastPointer = useRef({ x: null, y: null })
   const glow = useMotionTemplate`radial-gradient(540px circle at ${useTransform(gx, (v) => v * 100)}% ${useTransform(gy, (v) => v * 100)}%, rgb(var(--copper) / var(--glow-strong)), rgb(var(--copper) / var(--glow-soft)) 35%, transparent 70%)`
 
-  // Recalcule la position du halo à partir de la dernière position connue du
-  // curseur — utilisé au mousemove ET au scroll, pour que le halo reste collé
-  // au curseur même quand on défile sans bouger la souris.
+  const fadeGlow = (visible) =>
+    animate(glowOpacity, visible ? 1 : 0, { duration: 0.35, ease: 'easeOut' })
+
+  // Recalcule la position ET la visibilité du halo depuis la dernière position
+  // connue du curseur. Appelé au mousemove ET au scroll : si le curseur n'est
+  // plus au-dessus du hero (ex. on scrolle vers le bas), le halo s'efface.
   const updateGlow = () => {
     const { x, y } = lastPointer.current
     if (x == null || !sectionRef.current) return
     const r = sectionRef.current.getBoundingClientRect()
     gx.set((x - r.left) / r.width)
     gy.set((y - r.top) / r.height)
+    const inside = x >= r.left && x <= r.right && y >= r.top && y <= r.bottom
+    fadeGlow(inside)
   }
 
   const handleMove = (e) => {
@@ -64,6 +71,7 @@ export default function Hero() {
     lastPointer.current = { x: e.clientX, y: e.clientY }
     updateGlow()
   }
+  const handleLeave = () => fadeGlow(false)
 
   useEffect(() => {
     const onScroll = () => updateGlow()
@@ -109,14 +117,15 @@ export default function Hero() {
     <section
       ref={sectionRef}
       onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
       onDoubleClick={() => setClockMode(true)}
       className="relative flex min-h-[100svh] select-none items-center overflow-hidden"
     >
       {/* Grille technique */}
       <div className="absolute inset-0 bg-grid mask-radial animate-grid-drift" aria-hidden />
 
-      {/* Lueur interactive */}
-      <motion.div style={{ background: glow }} className="pointer-events-none absolute inset-0 animate-glow-pulse" aria-hidden />
+      {/* Lueur interactive (s'efface quand le curseur quitte le hero) */}
+      <motion.div style={{ background: glow, opacity: glowOpacity }} className="pointer-events-none absolute inset-0" aria-hidden />
 
       {/* Bezel rotatif + parallaxe (le double-clic est géré au niveau de la section) */}
       <motion.div
