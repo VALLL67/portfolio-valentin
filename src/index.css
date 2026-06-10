@@ -1,0 +1,201 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ── THÈME SOMBRE (par défaut) ─────────────────────────────────────── */
+  :root {
+    --ink: 10 11 13;
+    --surface: 18 20 25;
+    --surface-2: 23 26 33;
+    --line: 35 38 47;
+    --fg: 233 231 225;
+    --muted: 139 145 156;
+    --faint: 90 96 107;
+    --copper: 139 124 246;
+    --copper-soft: 180 167 251;
+    --copper-dim: 75 63 138;
+    --live: 84 201 168;
+    --grid: 255 255 255;
+    --grid-alpha: 0.035;
+    --glow-strong: 0.18;
+    --glow-soft: 0.05;
+  }
+
+  /* ── THÈME CLAIR ───────────────────────────────────────────────────── */
+  .light {
+    --ink: 244 242 236;
+    --surface: 255 255 255;
+    --surface-2: 237 233 224;
+    --line: 222 216 204;
+    --fg: 26 27 30;
+    --muted: 88 93 104;
+    --faint: 150 156 167;
+    --copper: 98 70 200;
+    --copper-soft: 74 53 160;
+    --copper-dim: 201 192 240;
+    --live: 30 160 122;
+    --grid: 0 0 0;
+    --grid-alpha: 0.05;
+    --glow-strong: 0.12;
+    --glow-soft: 0.04;
+  }
+
+  /* ── THÈME CRT (easter egg, activé via la commande `crt` du terminal) ── */
+  .crt {
+    --ink: 4 10 6;
+    --surface: 8 18 11;
+    --surface-2: 12 26 16;
+    --line: 26 58 33;
+    --fg: 130 240 150;
+    --muted: 80 175 102;
+    --faint: 48 110 64;
+    --copper: 150 255 172;
+    --copper-soft: 205 255 215;
+    --copper-dim: 38 92 50;
+    --live: 150 255 172;
+    --grid: 90 255 130;
+    --grid-alpha: 0.06;
+    --glow-strong: 0.16;
+    --glow-soft: 0.05;
+  }
+
+  * {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ink text-fg font-sans antialiased;
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
+    /* Toujours la flèche, jamais le curseur "I" de sélection sur le texte */
+    cursor: default;
+  }
+
+  /* La petite main reste sur les éléments cliquables */
+  a,
+  button,
+  [role='button'],
+  label,
+  summary {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: rgb(var(--copper));
+    color: rgb(var(--ink));
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: rgb(var(--ink)); }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--line));
+    border-radius: 999px;
+    border: 3px solid rgb(var(--ink));
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(var(--faint)); }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--copper));
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Transition douce des couleurs lors du changement de thème.
+     :where() garde une spécificité nulle → les transitions de hover propres
+     aux composants (transition-colors, duration-300…) restent prioritaires. */
+  @media (prefers-reduced-motion: no-preference) {
+    :where(header, section, footer, article, aside, .panel, .chip,
+           h1, h2, h3, p, span, li, svg, circle, line, rect) {
+      transition-property: background-color, border-color, color, fill, stroke;
+      transition-duration: 0.35s;
+      transition-timing-function: ease;
+    }
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-[0.28em] text-copper;
+  }
+  .panel {
+    @apply rounded-xl border border-line bg-surface/60 backdrop-blur-sm;
+  }
+  .chip {
+    @apply inline-flex items-center rounded-md border border-line bg-surface-2 px-2.5 py-1
+           font-mono text-[11px] tracking-wide text-muted transition-colors;
+  }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(var(--grid) / var(--grid-alpha)) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--grid) / var(--grid-alpha)) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .mask-radial {
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 40%, #000 30%, transparent 100%);
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 40%, #000 30%, transparent 100%);
+  }
+
+  /* Dégradé cuivre adaptatif au thème */
+  .text-gradient-copper {
+    background-image: linear-gradient(180deg, #d8d0fb 0%, #8b7cf6 55%, #5b4bc4 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .light .text-gradient-copper {
+    background-image: linear-gradient(180deg, #8a78ef 0%, #6246c8 55%, #4a35a0 100%);
+  }
+  .crt .text-gradient-copper {
+    background-image: linear-gradient(180deg, #d5ffe0 0%, #8fffae 55%, #3fbf63 100%);
+  }
+
+  /* Scanlines + vignette du mode CRT */
+  .crt body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px);
+    animation: crt-flicker 4s infinite steps(60);
+  }
+  .crt body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+    background: radial-gradient(ellipse 90% 80% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  }
+  .crt body {
+    text-shadow: 0 0 3px rgb(var(--copper) / 0.35);
+  }
+  @keyframes crt-flicker {
+    0%, 96%, 100% { opacity: 1; }
+    97% { opacity: 0.82; }
+    98% { opacity: 1; }
+    99% { opacity: 0.9; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
