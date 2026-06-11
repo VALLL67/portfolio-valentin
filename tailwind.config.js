@@ -29,7 +29,7 @@ export default {
         'spin-slow': { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } },
         'spin-reverse': { from: { transform: 'rotate(360deg)' }, to: { transform: 'rotate(0deg)' } },
         blink: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0.25' } },
-        'grid-drift': { '0%': { backgroundPosition: '0 0' }, '100%': { backgroundPosition: '40px 40px' } },
+        'grid-drift': { '0%': { transform: 'translate(0, 0)' }, '100%': { transform: 'translate(40px, 40px)' } },
         'glow-pulse': { '0%, 100%': { opacity: '0.5' }, '50%': { opacity: '0.85' } },
       },
       animation: {

@@ -44,6 +44,10 @@ const reveal = {
 export default function Hero() {
   const uptime = useUptime()
   const sectionRef = useRef(null)
+  // Vrai uniquement sur un appareil avec une vraie souris → pas de halo sur tactile
+  const [fine] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+  )
 
   // Lueur violette qui suit le curseur dans le hero
   const gx = useMotionValue(0.5)
@@ -75,6 +79,7 @@ export default function Hero() {
   const handleLeave = () => fadeGlow(false)
 
   useEffect(() => {
+    if (!fine) return // pas de halo sur tactile (mobile/tablette)
     startPointerTracking()
     let raf = null
     let idle = null
@@ -150,10 +155,16 @@ export default function Hero() {
       className="relative flex min-h-[100svh] select-none items-center overflow-hidden"
     >
       {/* Grille technique */}
-      <div className="absolute inset-0 bg-grid mask-radial animate-grid-drift" aria-hidden />
+      {/* Grille technique (animée en transform → accéléré GPU, fluide sur Firefox) */}
+      <div className="absolute inset-0 mask-radial overflow-hidden" aria-hidden>
+        <div className="absolute -inset-10 bg-grid animate-grid-drift will-change-transform" />
+      </div>
 
       {/* Lueur interactive (s'efface quand le curseur quitte le hero) */}
-      <motion.div style={{ background: glow, opacity: glowOpacity }} className="pointer-events-none absolute inset-0" aria-hidden />
+      {/* Lueur interactive (desktop uniquement : pas de souris sur mobile/tablette) */}
+      {fine && (
+        <motion.div style={{ background: glow, opacity: glowOpacity }} className="pointer-events-none absolute inset-0" aria-hidden />
+      )}
 
       {/* Bezel rotatif + parallaxe (le double-clic est géré au niveau de la section) */}
       <motion.div

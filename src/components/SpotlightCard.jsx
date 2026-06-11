@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, animate, useMotionValue, useSpring, useMotionTemplate } from 'framer-motion'
 import { startPointerTracking, getPointer, setPointer } from '../lib/pointer.js'
 
@@ -8,6 +8,10 @@ import { startPointerTracking, getPointer, setPointer } from '../lib/pointer.js'
 // carte (bordure, fond, rayon, padding…) — ce composant EST la carte.
 export default function SpotlightCard({ children, className = '', tilt = 7 }) {
   const ref = useRef(null)
+  // Vrai uniquement avec une vraie souris → pas de halo/inclinaison sur tactile
+  const [fine] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+  )
   const mx = useMotionValue(50)
   const my = useMotionValue(50)
   const opacity = useMotionValue(0)
@@ -53,6 +57,7 @@ export default function SpotlightCard({ children, className = '', tilt = 7 }) {
   }
 
   useEffect(() => {
+    if (!fine) return // pas de halo ni d'inclinaison sur tactile (mobile/tablette)
     startPointerTracking()
     let raf = null
     let idle = null
@@ -88,17 +93,19 @@ export default function SpotlightCard({ children, className = '', tilt = 7 }) {
   return (
     <motion.div
       ref={ref}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
-      style={{ rotateX: srx, rotateY: sry, transformPerspective: 1000 }}
+      onMouseMove={fine ? handleMove : undefined}
+      onMouseLeave={fine ? handleLeave : undefined}
+      style={fine ? { rotateX: srx, rotateY: sry, transformPerspective: 1000 } : undefined}
       className={`group/spot relative ${className}`}
     >
-      <motion.span
-        aria-hidden
-        style={{ background: spotlight, opacity }}
-        className="pointer-events-none absolute inset-0 rounded-[inherit]"
-      />
-      <div className="relative" style={{ transform: 'translateZ(40px)' }}>
+      {fine && (
+        <motion.span
+          aria-hidden
+          style={{ background: spotlight, opacity }}
+          className="pointer-events-none absolute inset-0 rounded-[inherit]"
+        />
+      )}
+      <div className="relative" style={fine ? { transform: 'translateZ(40px)' } : undefined}>
         {children}
       </div>
     </motion.div>
