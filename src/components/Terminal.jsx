@@ -17,10 +17,10 @@ function uptimeStr() {
 }
 
 const BANNER = [
-  '┌─────────────────────────────────────────┐',
-  '│  valcloud.fr — console interactive        │',
-  '│  Tape "help" pour la liste des commandes  │',
-  '└─────────────────────────────────────────┘',
+  '─────────────────────────────────────────────',
+  '    valcloud.fr — console interactive       ',
+  '  Tape "help" pour la liste des commandes ',
+  '─────────────────────────────────────────────',
 ]
 
 export default function Terminal() {
